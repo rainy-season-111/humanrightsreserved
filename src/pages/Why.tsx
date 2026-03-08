@@ -1,4 +1,6 @@
 import { motion, type Transition } from 'framer-motion'
+import { useLang } from '../LangContext'
+import { t } from '../i18n'
 import './Why.css'
 
 const ease = [0.16, 1, 0.3, 1] as const
@@ -10,23 +12,22 @@ const pageTransition = {
   transition: { duration: 1, ease } satisfies Transition,
 }
 
-const lines = [
-  { text: 'create jobs for costa ricans.', delay: 0.5 },
-  { text: 'inspire others to follow their dreams.', delay: 1.0 },
-  { text: 'enjoy the life...', delay: 1.5 },
-]
+const delays = [0.5, 1.0, 1.5, 2.0]
 
 export default function Why() {
+  const lang = useLang()
+  const lines = t[lang].why
+
   return (
-    <motion.div className="why" {...pageTransition}>
+    <motion.div className="why" {...pageTransition} key={lang}>
       <div className="why-lines">
-        {lines.map(({ text, delay }, i) => (
+        {lines.map((text, i) => (
           <motion.p
-            key={text}
+            key={`${lang}-${i}`}
             className={`why-line why-line--${i}`}
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.8, delay, ease }}
+            transition={{ duration: 1.8, delay: delays[i], ease }}
           >
             {text}
           </motion.p>

@@ -1,4 +1,6 @@
 import { motion, type Transition } from 'framer-motion'
+import { useLang } from '../LangContext'
+import { t } from '../i18n'
 import './About.css'
 
 const ease = [0.16, 1, 0.3, 1] as const
@@ -28,18 +30,12 @@ const lineReveal = {
   },
 }
 
-const paragraphs = [
-  'by the way of the magic of the universe, we found ourselves calling the beautiful country of costa rica home.',
-  'during our first rainy season, we would sit and listen to the endless sound of the rain.',
-  'asking ourselves questions such as',
-  '\u201Cwhat do you want to do with your time on earth?\u201D, \u201Cwhat is important to you?\u201D, and \u201Cwhat brings you joy?\u201D.',
-  'so inspired by the patience, resilience, gratitude and brilliance of the people and country of costa rica',
-  'we started building...',
-]
-
 export default function About() {
+  const lang = useLang()
+  const paragraphs = t[lang].about
+
   return (
-    <motion.div className="about" {...pageTransition}>
+    <motion.div className="about" {...pageTransition} key={lang}>
       <motion.div
         className="about-text"
         variants={staggerContainer}
@@ -47,7 +43,7 @@ export default function About() {
         animate="animate"
       >
         {paragraphs.map((text, i) => (
-          <motion.p key={i} variants={lineReveal}>
+          <motion.p key={`${lang}-${i}`} variants={lineReveal}>
             {text}
           </motion.p>
         ))}

@@ -1,0 +1,82 @@
+.music {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  position: relative;
+}
+
+.music-btn {
+  all: unset;
+  cursor: pointer;
+  font-size: 0.6875rem;
+  opacity: 0.5;
+  transition: opacity 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+  line-height: 1;
+}
+
+.music-btn:hover {
+  opacity: 1;
+}
+
+.music-time {
+  font-size: 0.5625rem;
+  opacity: 0.5;
+  font-variant-numeric: tabular-nums;
+}
+
+.music-progress {
+  width: 3rem;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.music-progress-fill {
+  height: 100%;
+  background: #000;
+  transition: width 0.3s linear;
+}
+
+.music-tip {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  white-space: nowrap;
+  font-size: 0.5625rem;
+  line-height: 1.6;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.4s cubic-bezier(0.25, 0.1, 0.25, 1),
+    transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  padding: 0.4em 0.6em 0.8em;
+}
+
+.music:hover .music-tip {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.music-tip-title {
+  opacity: 0.6;
+}
+
+.music-tip-artist {
+  color: #000;
+  text-decoration: none;
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.music-tip-artist:hover {
+  opacity: 1;
+}
