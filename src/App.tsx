@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Nav from './components/Nav'
 import About from './pages/About'
 import Why from './pages/Why'
@@ -15,7 +15,13 @@ const ease = [0.16, 1, 0.3, 1] as const
 
 function App() {
   const location = useLocation()
+  const navigate = useNavigate()
   const [lang, setLang] = useState<Lang | null>(null)
+
+  const selectLang = (l: Lang) => {
+    setLang(l)
+    navigate('/about')
+  }
 
   if (!lang) {
     return (
@@ -24,18 +30,18 @@ function App() {
           className="lang-gate-options"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1.2, ease }}
+          transition={{ duration: 2.5, ease }}
         >
           {languages.map((l, i) => (
             <motion.span
               key={l}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.3 + i * 0.15, ease }}
+              transition={{ duration: 2, delay: 1 + i * 0.5, ease }}
             >
               <button
                 className="lang-gate-btn"
-                onClick={() => setLang(l)}
+                onClick={() => selectLang(l)}
               >
                 {l === 'GEORDIE' ? 'GEORDIE [7/7]' : l}
               </button>
@@ -47,7 +53,7 @@ function App() {
           className="lang-gate-footer built-by"
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.35 }}
-          transition={{ duration: 1.5, delay: 1, ease }}
+          transition={{ duration: 2.5, delay: 3, ease }}
         >
           built by tamara and william.
         </motion.span>
@@ -61,7 +67,7 @@ function App() {
         className="app"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 3, delay: 0.8, ease }}
+        transition={{ duration: 4, delay: 1, ease }}
       >
         <Nav />
         <main className="main">
@@ -75,7 +81,12 @@ function App() {
           </AnimatePresence>
         </main>
         <footer className="footer">
-          <div className="footer-lang">
+          <motion.div
+            className="footer-lang"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 2, delay: 18, ease }}
+          >
             {languages.map((l, i) => (
               <span key={l}>
                 <button
@@ -87,12 +98,23 @@ function App() {
                 {i < languages.length - 1 && <span className="lang-sep">|</span>}
               </span>
             ))}
-          </div>
-          <MusicPlayer />
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 2, delay: 16, ease }}
+          >
+            <MusicPlayer />
+          </motion.div>
         </footer>
-        <div className="built-by-row">
+        <motion.div
+          className="built-by-row"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 2, delay: 20, ease }}
+        >
           <span className="built-by">{t[lang].builtBy}</span>
-        </div>
+        </motion.div>
       </motion.div>
     </LangContext.Provider>
   )

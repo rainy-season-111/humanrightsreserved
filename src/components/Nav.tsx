@@ -1,34 +1,67 @@
-import { NavLink } from 'react-router-dom'
+import { useLocation, NavLink } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { useLang } from '../LangContext'
 import { t } from '../i18n'
 import './Nav.css'
 
+const ease = [0.16, 1, 0.3, 1] as const
+
 export default function Nav() {
   const lang = useLang()
   const nav = t[lang].nav
+  const location = useLocation()
+  const aboutActive = location.pathname === '/about'
 
   return (
     <nav className="nav">
-      <span className="nav-title">humanrightsreserved.org</span>
+      <motion.span
+        className="nav-title"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2.5, delay: 0, ease }}
+      >
+        humanrightsreserved.org
+      </motion.span>
       <div className="nav-links">
-        <NavLink
-          to="/about"
-          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: aboutActive ? 1 : 1 }}
+          transition={{ duration: 2, delay: 2.5, ease }}
         >
-          {nav.about}
-        </NavLink>
-        <NavLink
-          to="/why"
-          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+          <motion.div
+            initial={{ opacity: 0.4 }}
+            animate={{ opacity: aboutActive ? 1 : 0.4 }}
+            transition={{ duration: 2, delay: aboutActive ? 22 : 0, ease }}
+          >
+            <NavLink to="/about" className="nav-link nav-link-about">
+              {nav.about}
+            </NavLink>
+          </motion.div>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 2, delay: 4, ease }}
         >
-          {nav.why}
-        </NavLink>
-        <NavLink
-          to="/photos"
-          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+          <NavLink
+            to="/why"
+            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+          >
+            {nav.why}
+          </NavLink>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 2, delay: 5.5, ease }}
         >
-          {nav.photos}
-        </NavLink>
+          <NavLink
+            to="/photos"
+            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+          >
+            {nav.photos}
+          </NavLink>
+        </motion.div>
       </div>
     </nav>
   )

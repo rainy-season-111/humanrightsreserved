@@ -9,24 +9,26 @@ const pageTransition = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
   exit: { opacity: 0 },
-  transition: { duration: 1, ease } satisfies Transition,
+  transition: { duration: 2, ease } satisfies Transition,
 }
 
+// Each line waits for nav to finish (photos at ~5.5s + 2s = 7.5s)
+// Then lines come in one by one
 const staggerContainer = {
   animate: {
     transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.4,
+      staggerChildren: 1.5,
+      delayChildren: 7,
     },
   },
 }
 
 const lineReveal = {
-  initial: { opacity: 0, y: 8 },
+  initial: { opacity: 0, y: 6 },
   animate: {
     opacity: 1,
     y: 0,
-    transition: { duration: 1.4, ease },
+    transition: { duration: 2.5, ease },
   },
 }
 
@@ -53,7 +55,7 @@ export default function About() {
         className="about-video"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 2, delay: 0.8, ease }}
+        transition={{ duration: 3, delay: 10, ease }}
       >
         <video
           autoPlay

@@ -9,10 +9,11 @@ const pageTransition = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
   exit: { opacity: 0 },
-  transition: { duration: 1, ease } satisfies Transition,
+  transition: { duration: 2, ease } satisfies Transition,
 }
 
-const delays = [0.5, 1.0, 1.5, 2.0]
+// After nav finishes (~7.5s), lines come in one by one
+const delays = [7, 9.5, 12, 14.5]
 
 export default function Why() {
   const lang = useLang()
@@ -25,9 +26,9 @@ export default function Why() {
           <motion.p
             key={`${lang}-${i}`}
             className={`why-line why-line--${i}`}
-            initial={{ opacity: 0, y: 14 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.8, delay: delays[i], ease }}
+            transition={{ duration: 3, delay: delays[i], ease }}
           >
             {text}
           </motion.p>
