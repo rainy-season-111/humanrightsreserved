@@ -5,7 +5,7 @@ type Translations = {
   about: string[]
   why: string[]
   builtBy: string
-  nav: { about: string; why: string; photos: string }
+  nav: { home: string; why: string; photos: string }
 }
 
 export const t: Record<Lang, Translations> = {
@@ -16,7 +16,7 @@ export const t: Record<Lang, Translations> = {
       'asking ourselves questions such as',
       '\u201Cwhat do you want to do with your time on earth?\u201D',
       '\u201Cwhat is important to you?\u201D',
-      '\u201Cwhat brings you joy?\u201D.',
+      '\u201Cwhat brings you joy?\u201D',
       'so inspired by the patience, resilience, gratitude and brilliance of the people and country of costa rica',
       'we started building...',
     ],
@@ -27,7 +27,7 @@ export const t: Record<Lang, Translations> = {
       'enjoy the life :)',
     ],
     builtBy: 'built by tamara and william.',
-    nav: { about: 'about.', why: 'why?', photos: 'photos.' },
+    nav: { home: 'home.', why: 'why?', photos: 'photos.' },
   },
   CR: {
     about: [
@@ -36,7 +36,7 @@ export const t: Record<Lang, Translations> = {
       'haci\u00E9ndonos preguntas como',
       '\u201C\u00BFqu\u00E9 quer\u00E9s hacer con tu tiempo en la tierra?\u201D',
       '\u201C\u00BFqu\u00E9 es importante para vos?\u201D',
-      '\u201C\u00BFqu\u00E9 te trae alegr\u00EDa?\u201D.',
+      '\u201C\u00BFqu\u00E9 te trae alegr\u00EDa?\u201D',
       'tan inspirados por la paciencia, la resiliencia, la gratitud y la brillantez de la gente y el pa\u00EDs de costa rica',
       'empezamos a construir...',
     ],
@@ -47,7 +47,7 @@ export const t: Record<Lang, Translations> = {
       'disfrutar la vida, pura vida :)',
     ],
     builtBy: 'hecho por tamara y william.',
-    nav: { about: 'sobre.', why: '\u00BFpor qu\u00E9?', photos: 'fotos.' },
+    nav: { home: 'inicio.', why: '\u00BFpor qu\u00E9?', photos: 'fotos.' },
   },
   FR: {
     about: [
@@ -56,7 +56,7 @@ export const t: Record<Lang, Translations> = {
       'en nous posant des questions telles que',
       '\u201Cque veux-tu faire de ton temps sur terre ?\u201D',
       '\u201Cqu\u2019est-ce qui est important pour toi ?\u201D',
-      '\u201Cqu\u2019est-ce qui te rend heureux ?\u201D.',
+      '\u201Cqu\u2019est-ce qui te rend heureux ?\u201D',
       'tellement inspir\u00E9s par la patience, la r\u00E9silience, la gratitude et la brillance du peuple et du pays du costa rica',
       'nous avons commenc\u00E9 \u00E0 construire...',
     ],
@@ -67,7 +67,7 @@ export const t: Record<Lang, Translations> = {
       'profiter de la vie :)',
     ],
     builtBy: 'construit par tamara et william.',
-    nav: { about: '\u00E0 propos.', why: 'pourquoi ?', photos: 'photos.' },
+    nav: { home: 'accueil.', why: 'pourquoi ?', photos: 'photos.' },
   },
   GEORDIE: {
     about: [
@@ -76,7 +76,7 @@ export const t: Record<Lang, Translations> = {
       'askin\u2019 worsels questions like',
       '\u201Cwhat d\u2019ye wanna dee wi\u2019 yer time on this earth?\u201D',
       '\u201Cwhat matters te ye?\u201D',
-      '\u201Cwhat brings ye joy, like?\u201D.',
+      '\u201Cwhat brings ye joy, like?\u201D',
       'so inspired by the patience, grit, gratitude an\u2019 pure class of the people an\u2019 country of costa rica',
       'we started buildin\u2019, didn\u2019t we...',
     ],
@@ -87,6 +87,6 @@ export const t: Record<Lang, Translations> = {
       'enjoy the life, man :)',
     ],
     builtBy: 'built by tamara an\u2019 william.',
-    nav: { about: 'about.', why: 'why, like?', photos: 'photos.' },
+    nav: { home: 'hyem.', why: 'why, like?', photos: 'photos.' },
   },
 }

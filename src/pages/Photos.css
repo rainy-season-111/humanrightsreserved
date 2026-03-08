@@ -67,16 +67,15 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 4rem 3.5rem 6rem;
+  align-items: flex-start;
+  padding: 0 3.5rem 6rem;
 }
 
 .gallery-hero {
   font-family: inherit;
-  font-size: clamp(0.8125rem, 1.2vw, 1rem);
+  font-size: clamp(0.75rem, 1.1vw, 0.9375rem);
   font-weight: 400;
-  margin-bottom: 4rem;
-  opacity: 0.6;
+  margin-bottom: 3rem;
 }
 
 .gallery-grid {

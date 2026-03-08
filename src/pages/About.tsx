@@ -1,60 +1,35 @@
-import { motion, type Transition } from 'framer-motion'
+import { useState } from 'react'
 import { useLang } from '../LangContext'
 import { t } from '../i18n'
+import Typewriter from '../components/Typewriter'
 import './About.css'
 
-const ease = [0.16, 1, 0.3, 1] as const
 
-const pageTransition = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  exit: { opacity: 0 },
-  transition: { duration: 2, ease } satisfies Transition,
-}
-
-// ~180 wpm = 3 words/sec, + small pause between lines
-function readingTime(text: string) {
-  const words = text.split(/\s+/).length
-  return words / 3 + 0.8
-}
-
-function getDelays(paragraphs: string[], startAt: number) {
-  const delays: number[] = []
-  let t = startAt
-  for (let i = 0; i < paragraphs.length; i++) {
-    delays.push(t)
-    t += readingTime(paragraphs[i]) + 2 // reading time + fade duration overlap
-  }
-  return delays
-}
-
-export default function About() {
+export default function About({ logoTyped, onTypingStart, onTypingDone }: { logoTyped?: boolean; onTypingStart?: () => void; onTypingDone?: () => void }) {
   const lang = useLang()
   const paragraphs = t[lang].about
-  // Video at 7s (after nav), text starts after video has appeared (~10s)
-  const textDelays = getDelays(paragraphs, 10)
+  const [showVideo, setShowVideo] = useState(false)
+  const lastLineIndex = paragraphs.length - 1
+
+  const handleLineComplete = (lineIndex: number) => {
+    if (lineIndex === lastLineIndex) {
+      setShowVideo(true)
+    }
+  }
 
   return (
-    <motion.div className="about" {...pageTransition} key={lang}>
-      <motion.div className="about-text">
-        {paragraphs.map((text, i) => (
-          <motion.p
-            key={`${lang}-${i}`}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 2.5, delay: textDelays[i], ease }}
-          >
-            {text}
-          </motion.p>
-        ))}
-      </motion.div>
+    <div className="about" key={lang}>
+      <div className="about-text">
+        <Typewriter
+          paragraphs={paragraphs}
+          startDelay={logoTyped ? 2.5 : 999}
+          onStart={onTypingStart}
+          onComplete={onTypingDone}
+          onLineComplete={handleLineComplete}
+        />
+      </div>
 
-      <motion.div
-        className="about-video"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 3, delay: 7, ease }}
-      >
+      <div className={`about-video ${showVideo ? 'about-video--visible' : ''}`}>
         <video
           autoPlay
           loop
@@ -62,7 +37,7 @@ export default function About() {
           playsInline
           src="/about-video.mp4"
         />
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   )
 }

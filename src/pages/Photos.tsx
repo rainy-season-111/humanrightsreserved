@@ -16,10 +16,14 @@ const PASSWORD = 'puravida'
 // Add photo filenames here in order, e.g. ['photo-1.jpg', 'photo-2.jpg']
 const photos: string[] = []
 
-export default function Photos() {
+export default function Photos({ onEnter, onUnlock }: { onEnter?: () => void; onUnlock?: () => void }) {
   const [input, setInput] = useState('')
   const [unlocked, setUnlocked] = useState(false)
   const [shake, setShake] = useState(false)
+
+  useEffect(() => {
+    onEnter?.()
+  }, [])
 
   const handleKey = useCallback((e: KeyboardEvent) => {
     if (unlocked) return
@@ -27,6 +31,7 @@ export default function Photos() {
     if (e.key === 'Enter') {
       if (input === PASSWORD) {
         setUnlocked(true)
+        onUnlock?.()
       } else {
         setShake(true)
         setTimeout(() => {
@@ -73,14 +78,7 @@ export default function Photos() {
             animate={{ opacity: 1 }}
             transition={{ duration: 2, delay: 0.5, ease }}
           >
-            <motion.h1
-              className="gallery-hero"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.8, delay: 0.8, ease }}
-            >
-              the story so far...
-            </motion.h1>
+            <h1 className="gallery-hero">the story so far...</h1>
             <div className="gallery-grid">
               {photos.map((src, i) => (
                 <motion.img

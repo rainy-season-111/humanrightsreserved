@@ -1,26 +1,52 @@
-import { useState } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { Routes, Route } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Nav from './components/Nav'
 import About from './pages/About'
 import Why from './pages/Why'
 import Photos from './pages/Photos'
+import NotFound from './pages/NotFound'
 import MusicPlayer from './components/MusicPlayer'
 import { languages, t, type Lang } from './i18n'
 import { LangContext } from './LangContext'
 import './App.css'
 
 const ease = [0.16, 1, 0.3, 1] as const
+const FADE = 'opacity 2s cubic-bezier(0.16, 1, 0.3, 1)'
 
 function App() {
   const location = useLocation()
   const navigate = useNavigate()
   const [lang, setLang] = useState<Lang | null>(null)
+  const [cursorState, setCursorState] = useState<'logo' | 'body' | 'done'>('logo')
+  const [logoTyped, setLogoTyped] = useState(false)
+  const [showLang, setShowLang] = useState(false)
+  const [showBuiltBy, setShowBuiltBy] = useState(false)
+  const [photosLocked, setPhotosLocked] = useState(false)
+
+  useEffect(() => {
+    setCursorState('logo')
+    setShowLang(false)
+    setShowBuiltBy(false)
+  }, [location.pathname])
+
+  // Lang fades in 5s after typing done (video is appearing), built-by 3s after lang
+  useEffect(() => {
+    if (cursorState !== 'done') return
+    const langTimer = setTimeout(() => setShowLang(true), 5000)
+    const builtByTimer = setTimeout(() => setShowBuiltBy(true), 8000)
+    return () => { clearTimeout(langTimer); clearTimeout(builtByTimer) }
+  }, [cursorState])
 
   const selectLang = (l: Lang) => {
     setLang(l)
-    navigate('/about')
+    navigate('/')
+  }
+
+  const knownPaths = ['/', '/why', '/photos']
+  if (!lang && !knownPaths.includes(location.pathname)) {
+    return <NotFound />
   }
 
   if (!lang) {
@@ -61,32 +87,27 @@ function App() {
     )
   }
 
+  const done = cursorState === 'done'
+
   return (
     <LangContext.Provider value={lang}>
-      <motion.div
-        className="app"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 4, delay: 1, ease }}
-      >
-        <Nav />
+      <div className="app">
+        <Nav
+          showCursor={cursorState !== 'body'}
+          showLinks={done}
+          onLogoTyped={() => setLogoTyped(true)}
+          titleOverride={photosLocked ? ['Enter', 'Password.'] : undefined}
+        />
         <main className="main">
-          <AnimatePresence mode="wait">
-            <Routes location={location} key={location.pathname}>
-              <Route path="/about" element={<About />} />
-              <Route path="/why" element={<Why />} />
-              <Route path="/photos" element={<Photos />} />
-              <Route path="*" element={<Navigate to="/about" replace />} />
-            </Routes>
-          </AnimatePresence>
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<About logoTyped={logoTyped} onTypingStart={() => setCursorState('body')} onTypingDone={() => setCursorState('done')} />} />
+            <Route path="/why" element={<Why logoTyped={logoTyped} onTypingStart={() => setCursorState('body')} onTypingDone={() => setCursorState('done')} />} />
+            <Route path="/photos" element={<Photos onEnter={() => { setCursorState('body'); setPhotosLocked(true) }} onUnlock={() => { setCursorState('done'); setPhotosLocked(false) }} />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </main>
         <footer className="footer">
-          <motion.div
-            className="footer-lang"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 2, delay: 18, ease }}
-          >
+          <div className="footer-lang" style={{ opacity: showLang ? 1 : 0, transition: FADE }}>
             {languages.map((l, i) => (
               <span key={l}>
                 <button
@@ -98,24 +119,13 @@ function App() {
                 {i < languages.length - 1 && <span className="lang-sep shimmer">|</span>}
               </span>
             ))}
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 2, delay: 16, ease }}
-          >
-            <MusicPlayer />
-          </motion.div>
+          </div>
+          <MusicPlayer />
         </footer>
-        <motion.div
-          className="built-by-row"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 2, delay: 20, ease }}
-        >
+        <div className="built-by-row" style={{ opacity: showBuiltBy ? 1 : 0, transition: FADE }}>
           <span className="built-by">{t[lang].builtBy}</span>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </LangContext.Provider>
   )
 }

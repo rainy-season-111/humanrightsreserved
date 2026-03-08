@@ -15,11 +15,18 @@
   gap: 1.25em;
 }
 
+
 .about-video {
   flex: 1 1 auto;
   max-width: 48rem;
   aspect-ratio: 16 / 9;
   overflow: hidden;
+  opacity: 0;
+  transition: opacity 10s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.about-video--visible {
+  opacity: 1;
 }
 
 .about-video video {
