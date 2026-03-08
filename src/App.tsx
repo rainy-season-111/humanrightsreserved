@@ -29,6 +29,7 @@ function App() {
   const [showBuiltBy, setShowBuiltBy] = useState(false)
   const [photosLocked, setPhotosLocked] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
+  const [navRevealed, setNavRevealed] = useState(false)
   const visitedRef = useRef<Set<string>>(new Set())
 
   const isRevisit = visitedRef.current.has(location.pathname)
@@ -65,6 +66,11 @@ function App() {
       if (lockTimer) clearTimeout(lockTimer)
     }
   }, [location.pathname])
+
+  // Once nav links appear, they stay visible permanently
+  useEffect(() => {
+    if (cursorState === 'done') setNavRevealed(true)
+  }, [cursorState])
 
   // First visit: lang fades in 5s after typing done, built-by 8s after
   useEffect(() => {
@@ -122,14 +128,12 @@ function App() {
     )
   }
 
-  const done = cursorState === 'done'
-
   return (
     <LangContext.Provider value={lang}>
       <div className="app">
         <Nav
           showCursor={!photosLocked && cursorState !== 'body'}
-          showLinks={done}
+          showLinks={navRevealed}
           onLogoTyped={() => setLogoTyped(true)}
           photosLocked={photosLocked}
           transitioning={transitioning}
@@ -146,7 +150,7 @@ function App() {
               <Routes location={location}>
                 <Route path="/" element={<About logoTyped={logoTyped} revisit={isRevisit} onTypingStart={() => setCursorState('body')} onTypingDone={() => setCursorState('done')} />} />
                 <Route path="/why" element={<Why logoTyped={logoTyped} revisit={isRevisit} onTypingStart={() => setCursorState('body')} onTypingDone={() => setCursorState('done')} />} />
-                <Route path="/photos" element={<Photos onUnlock={() => setPhotosLocked(false)} />} />
+                <Route path="/photos" element={<Photos onUnlock={() => setPhotosLocked(false)} onClose={() => navigate('/')} />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </motion.div>
