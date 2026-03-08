@@ -1,0 +1,49 @@
+.why {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 10rem);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 3.5rem;
+}
+
+.why-lines {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 50%;
+}
+
+.why-line {
+  font-size: clamp(0.8125rem, 1.2vw, 1rem);
+  line-height: 1.5;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .why {
+    height: calc(100vh - 8rem);
+    padding: 0 1.5rem;
+  }
+
+  .why-line {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .why {
+    padding: 0 1.25rem;
+    justify-content: center;
+  }
+
+  .why-lines {
+    height: 40%;
+  }
+
+  .why-line {
+    font-size: 0.75rem;
+  }
+}
