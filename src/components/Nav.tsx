@@ -44,12 +44,13 @@ function useLogoTypewriter(startDelay: number, onComplete?: () => void) {
   return { started, lineIndex, charIndex, done }
 }
 
-export default function Nav({ showCursor, showLinks, onLogoTyped, photosLocked, transitioning }: {
+export default function Nav({ showCursor, showLinks, onLogoTyped, photosLocked, transitioning, onPhotosClose }: {
   showCursor?: boolean
   showLinks?: boolean
   onLogoTyped?: () => void
   photosLocked?: boolean
   transitioning?: boolean
+  onPhotosClose?: () => void
 }) {
   const lang = useLang()
   const nav = t[lang].nav
@@ -104,34 +105,40 @@ export default function Nav({ showCursor, showLinks, onLogoTyped, photosLocked, 
         })}
       </div>
       <div className="nav-links" style={{
-        opacity: showLinks ? 1 : 0,
-        pointerEvents: linksClickable ? 'auto' : 'none',
+        opacity: (showLinks || photosLocked) ? 1 : 0,
+        pointerEvents: (linksClickable || photosLocked) ? 'auto' : 'none',
         transition: 'opacity 2s cubic-bezier(0.16, 1, 0.3, 1)',
       }}>
-        <NavLink
-          to="/"
-          className={`nav-link ${homeActive ? 'active' : ''}`}
-        >
-          {nav.home}
-        </NavLink>
-        <NavLink
-          to="/why"
-          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-        >
-          {nav.why}
-        </NavLink>
-        <NavLink
-          to="/photos"
-          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-        >
-          {nav.photos}
-        </NavLink>
-        <a
-          href="https://humanrightsreserved.com"
-          className="nav-link"
-        >
-          .com
-        </a>
+        {photosLocked ? (
+          <button className="nav-close" onClick={onPhotosClose} aria-label="Close">&#x2715;</button>
+        ) : (
+          <>
+            <NavLink
+              to="/"
+              className={`nav-link ${homeActive ? 'active' : ''}`}
+            >
+              {nav.home}
+            </NavLink>
+            <NavLink
+              to="/why"
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+            >
+              {nav.why}
+            </NavLink>
+            <NavLink
+              to="/photos"
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+            >
+              {nav.photos}
+            </NavLink>
+            <a
+              href="https://humanrightsreserved.com"
+              className="nav-link"
+            >
+              .com
+            </a>
+          </>
+        )}
       </div>
     </nav>
   )

@@ -64,22 +64,7 @@
   animation: blink 1s step-end infinite;
 }
 
-.lock-close {
-  all: unset;
-  position: absolute;
-  bottom: 3rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.75rem;
-  opacity: 0.3;
-  cursor: pointer;
-  transition: opacity 0.4s ease;
-  animation: star-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
 
-.lock-close:hover {
-  opacity: 0.7;
-}
 
 @keyframes blink {
   0%, 100% { opacity: 1; }

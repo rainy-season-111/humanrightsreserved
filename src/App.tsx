@@ -137,6 +137,7 @@ function App() {
           onLogoTyped={() => setLogoTyped(true)}
           photosLocked={photosLocked}
           transitioning={transitioning}
+          onPhotosClose={() => navigate('/')}
         />
         <main className="main">
           <AnimatePresence mode="wait">
@@ -150,7 +151,7 @@ function App() {
               <Routes location={location}>
                 <Route path="/" element={<About logoTyped={logoTyped} revisit={isRevisit} onTypingStart={() => setCursorState('body')} onTypingDone={() => setCursorState('done')} />} />
                 <Route path="/why" element={<Why logoTyped={logoTyped} revisit={isRevisit} onTypingStart={() => setCursorState('body')} onTypingDone={() => setCursorState('done')} />} />
-                <Route path="/photos" element={<Photos onUnlock={() => setPhotosLocked(false)} onClose={() => navigate('/')} />} />
+                <Route path="/photos" element={<Photos onUnlock={() => setPhotosLocked(false)} />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </motion.div>

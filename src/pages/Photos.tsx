@@ -8,7 +8,7 @@ const PASSWORD = 'puravida'
 // Add photo filenames here in order, e.g. ['photo-1.jpg', 'photo-2.jpg']
 const photos: string[] = []
 
-export default function Photos({ onUnlock, onClose }: { onUnlock?: () => void; onClose?: () => void }) {
+export default function Photos({ onUnlock }: { onUnlock?: () => void }) {
   const [input, setInput] = useState('')
   const [unlocked, setUnlocked] = useState(false)
   const [shake, setShake] = useState(false)
@@ -84,11 +84,6 @@ export default function Photos({ onUnlock, onClose }: { onUnlock?: () => void; o
               ))}
               {showCursor && <span className="lock-cursor" />}
             </div>
-            {showCursor && (
-              <button className="lock-close" onClick={onClose} aria-label="Close">
-                &#x2715;
-              </button>
-            )}
           </motion.div>
         ) : (
           <motion.div
