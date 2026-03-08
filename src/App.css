@@ -34,7 +34,8 @@
 .lang-gate-footer {
   position: absolute;
   bottom: 2rem;
-  right: 3.5rem;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 0.6875rem;
 }
 
