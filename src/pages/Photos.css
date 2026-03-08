@@ -1,9 +1,14 @@
 .photos {
   width: 100%;
-  min-height: calc(100vh - 10rem);
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.photos--gallery {
+  overflow-y: auto;
+  align-items: flex-start;
 }
 
 .lock-screen {
@@ -11,7 +16,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: calc(100vh - 10rem);
+  height: 100%;
 }
 
 .lock-input {

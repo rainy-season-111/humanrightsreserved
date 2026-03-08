@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Routes, Route } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Nav from './components/Nav'
 import About from './pages/About'
@@ -15,6 +15,10 @@ import './App.css'
 const ease = [0.16, 1, 0.3, 1] as const
 const FADE = 'opacity 2s cubic-bezier(0.16, 1, 0.3, 1)'
 
+// Page transition: 300ms out, 100ms pause, 400ms in = ~800ms total
+const EXIT_EASE = [0.4, 0, 1, 1] as const
+const ENTER_EASE = [0, 0, 0.2, 1] as const
+
 function App() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -24,16 +28,42 @@ function App() {
   const [showLang, setShowLang] = useState(false)
   const [showBuiltBy, setShowBuiltBy] = useState(false)
   const [photosLocked, setPhotosLocked] = useState(false)
+  const [transitioning, setTransitioning] = useState(false)
+  const visitedRef = useRef<Set<string>>(new Set())
+
+  const isRevisit = visitedRef.current.has(location.pathname)
 
   useEffect(() => {
-    setCursorState('logo')
-    setShowLang(false)
-    setShowBuiltBy(false)
+    // Lock nav during page transition
+    setTransitioning(true)
+    const timer = setTimeout(() => setTransitioning(false), 800)
+
+    if (location.pathname === '/photos') {
+      setPhotosLocked(true)
+    } else if (isRevisit) {
+      // Return visit: skip animations, show everything immediately
+      setCursorState('done')
+      setShowLang(true)
+      setShowBuiltBy(true)
+      setPhotosLocked(false)
+    } else {
+      // First visit: full animation sequence
+      setCursorState('logo')
+      setPhotosLocked(false)
+      setShowLang(false)
+      setShowBuiltBy(false)
+    }
+
+    // Mark page as visited when leaving
+    return () => {
+      visitedRef.current.add(location.pathname)
+      clearTimeout(timer)
+    }
   }, [location.pathname])
 
-  // Lang fades in 5s after typing done (video is appearing), built-by 3s after lang
+  // First visit: lang fades in 5s after typing done, built-by 8s after
   useEffect(() => {
-    if (cursorState !== 'done') return
+    if (cursorState !== 'done' || isRevisit) return
     const langTimer = setTimeout(() => setShowLang(true), 5000)
     const builtByTimer = setTimeout(() => setShowBuiltBy(true), 8000)
     return () => { clearTimeout(langTimer); clearTimeout(builtByTimer) }
@@ -93,21 +123,32 @@ function App() {
     <LangContext.Provider value={lang}>
       <div className="app">
         <Nav
-          showCursor={cursorState !== 'body'}
+          showCursor={!photosLocked && cursorState !== 'body'}
           showLinks={done}
           onLogoTyped={() => setLogoTyped(true)}
-          titleOverride={photosLocked ? ['Enter', 'Password.'] : undefined}
+          photosLocked={photosLocked}
+          transitioning={transitioning}
         />
         <main className="main">
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<About logoTyped={logoTyped} onTypingStart={() => setCursorState('body')} onTypingDone={() => setCursorState('done')} />} />
-            <Route path="/why" element={<Why logoTyped={logoTyped} onTypingStart={() => setCursorState('body')} onTypingDone={() => setCursorState('done')} />} />
-            <Route path="/photos" element={<Photos onEnter={() => { setCursorState('body'); setPhotosLocked(true) }} onUnlock={() => { setCursorState('done'); setPhotosLocked(false) }} />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: ENTER_EASE, delay: 0.1 } }}
+              exit={{ opacity: 0, y: -12, transition: { duration: 0.3, ease: EXIT_EASE } }}
+              style={{ height: '100%' }}
+            >
+              <Routes location={location}>
+                <Route path="/" element={<About logoTyped={logoTyped} revisit={isRevisit} onTypingStart={() => setCursorState('body')} onTypingDone={() => setCursorState('done')} />} />
+                <Route path="/why" element={<Why logoTyped={logoTyped} revisit={isRevisit} onTypingStart={() => setCursorState('body')} onTypingDone={() => setCursorState('done')} />} />
+                <Route path="/photos" element={<Photos onUnlock={() => setPhotosLocked(false)} />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </motion.div>
+          </AnimatePresence>
         </main>
         <footer className="footer">
-          <div className="footer-lang" style={{ opacity: showLang ? 1 : 0, transition: FADE }}>
+          <div className="footer-lang" style={{ opacity: showLang ? 1 : 0, pointerEvents: showLang ? 'auto' : 'none', transition: FADE }}>
             {languages.map((l, i) => (
               <span key={l}>
                 <button

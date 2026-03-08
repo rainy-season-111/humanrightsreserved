@@ -4,11 +4,10 @@ import { t } from '../i18n'
 import Typewriter from '../components/Typewriter'
 import './About.css'
 
-
-export default function About({ logoTyped, onTypingStart, onTypingDone }: { logoTyped?: boolean; onTypingStart?: () => void; onTypingDone?: () => void }) {
+export default function About({ logoTyped, revisit, onTypingStart, onTypingDone }: { logoTyped?: boolean; revisit?: boolean; onTypingStart?: () => void; onTypingDone?: () => void }) {
   const lang = useLang()
   const paragraphs = t[lang].about
-  const [showVideo, setShowVideo] = useState(false)
+  const [showVideo, setShowVideo] = useState(!!revisit)
   const lastLineIndex = paragraphs.length - 1
 
   const handleLineComplete = (lineIndex: number) => {
@@ -23,13 +22,17 @@ export default function About({ logoTyped, onTypingStart, onTypingDone }: { logo
         <Typewriter
           paragraphs={paragraphs}
           startDelay={logoTyped ? 2.5 : 999}
+          fast={revisit}
           onStart={onTypingStart}
           onComplete={onTypingDone}
           onLineComplete={handleLineComplete}
         />
       </div>
 
-      <div className={`about-video ${showVideo ? 'about-video--visible' : ''}`}>
+      <div
+        className={`about-video ${showVideo ? 'about-video--visible' : ''}`}
+        style={revisit ? { transition: 'none' } : undefined}
+      >
         <video
           autoPlay
           loop

@@ -1,28 +1,22 @@
 import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence, type Transition } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import './Photos.css'
 
 const ease = [0.16, 1, 0.3, 1] as const
-
-const pageTransition = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  exit: { opacity: 0 },
-  transition: { duration: 1, ease } satisfies Transition,
-}
-
 const PASSWORD = 'puravida'
 
 // Add photo filenames here in order, e.g. ['photo-1.jpg', 'photo-2.jpg']
 const photos: string[] = []
 
-export default function Photos({ onEnter, onUnlock }: { onEnter?: () => void; onUnlock?: () => void }) {
+export default function Photos({ onUnlock }: { onUnlock?: () => void }) {
   const [input, setInput] = useState('')
   const [unlocked, setUnlocked] = useState(false)
   const [shake, setShake] = useState(false)
+  const [showCursor, setShowCursor] = useState(false)
 
   useEffect(() => {
-    onEnter?.()
+    const timer = setTimeout(() => setShowCursor(true), 2500)
+    return () => clearTimeout(timer)
   }, [])
 
   const handleKey = useCallback((e: KeyboardEvent) => {
@@ -52,7 +46,7 @@ export default function Photos({ onEnter, onUnlock }: { onEnter?: () => void; on
   }, [handleKey])
 
   return (
-    <motion.div className="photos" {...pageTransition}>
+    <div className={`photos ${unlocked ? 'photos--gallery' : ''}`}>
       <AnimatePresence mode="wait">
         {!unlocked ? (
           <motion.div
@@ -67,7 +61,7 @@ export default function Photos({ onEnter, onUnlock }: { onEnter?: () => void; on
               {input.split('').map((_, i) => (
                 <span key={i} className="lock-star">&#10038;</span>
               ))}
-              <span className="lock-cursor" />
+              {showCursor && <span className="lock-cursor" />}
             </div>
           </motion.div>
         ) : (
@@ -96,6 +90,6 @@ export default function Photos({ onEnter, onUnlock }: { onEnter?: () => void; on
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   )
 }

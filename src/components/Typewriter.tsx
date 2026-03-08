@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 
-// ~120 wpm ≈ 2 words/sec ≈ 12 chars/sec ≈ 80ms per char
 const CHAR_DELAY = 80
 const LINE_PAUSE = 2400
 
@@ -8,6 +7,7 @@ export default function Typewriter({
   paragraphs,
   startDelay,
   lineClassName,
+  fast,
   onStart,
   onComplete,
   onLineComplete,
@@ -15,6 +15,7 @@ export default function Typewriter({
   paragraphs: string[]
   startDelay: number
   lineClassName?: string
+  fast?: boolean
   onStart?: () => void
   onComplete?: () => void
   onLineComplete?: (lineIndex: number) => void
@@ -25,8 +26,20 @@ export default function Typewriter({
   const [done, setDone] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null)
   const completedLinesRef = useRef<Set<number>>(new Set())
+  const fastFiredRef = useRef(false)
 
+  // Fast mode: fire all callbacks immediately
   useEffect(() => {
+    if (!fast || fastFiredRef.current) return
+    fastFiredRef.current = true
+    onStart?.()
+    paragraphs.forEach((_, i) => onLineComplete?.(i))
+    onComplete?.()
+  }, [fast])
+
+  // Normal mode: start delay
+  useEffect(() => {
+    if (fast) return
     const id = setTimeout(() => {
       setStarted(true)
       setLineIndex(0)
@@ -34,10 +47,11 @@ export default function Typewriter({
       onStart?.()
     }, startDelay * 1000)
     return () => clearTimeout(id)
-  }, [startDelay])
+  }, [fast, startDelay])
 
+  // Normal mode: character by character
   useEffect(() => {
-    if (!started || lineIndex < 0 || lineIndex >= paragraphs.length) return
+    if (fast || !started || lineIndex < 0 || lineIndex >= paragraphs.length) return
 
     const currentLine = paragraphs[lineIndex]
 
@@ -66,8 +80,25 @@ export default function Typewriter({
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current)
     }
-  }, [started, lineIndex, charIndex, paragraphs])
+  }, [fast, started, lineIndex, charIndex, paragraphs])
 
+  // Fast mode: render all text immediately, page transition handles the entrance
+  if (fast) {
+    return (
+      <>
+        {paragraphs.map((text, i) => (
+          <p key={i} className={lineClassName} style={{ position: 'relative' }}>
+            <span style={{ visibility: 'hidden' }}>{text}</span>
+            <span style={{ position: 'absolute', top: 0, left: 0, right: 0, textAlign: 'inherit' }}>
+              {text}
+            </span>
+          </p>
+        ))}
+      </>
+    )
+  }
+
+  // Normal mode: typewriter render
   return (
     <>
       {paragraphs.map((text, i) => {

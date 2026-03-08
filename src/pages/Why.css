@@ -1,7 +1,7 @@
 .why {
   position: relative;
   width: 100%;
-  height: calc(100vh - 10rem);
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -24,7 +24,6 @@
 
 @media (max-width: 768px) {
   .why {
-    height: calc(100vh - 8rem);
     padding: 0 1.5rem;
   }
 
@@ -36,7 +35,6 @@
 @media (max-width: 480px) {
   .why {
     padding: 0 1.25rem;
-    justify-content: flex-start;
   }
 
   .why-lines {

@@ -44,13 +44,33 @@ function useLogoTypewriter(startDelay: number, onComplete?: () => void) {
   return { started, lineIndex, charIndex, done }
 }
 
-export default function Nav({ showCursor, showLinks, onLogoTyped, titleOverride }: { showCursor?: boolean; showLinks?: boolean; onLogoTyped?: () => void; titleOverride?: string[] }) {
+export default function Nav({ showCursor, showLinks, onLogoTyped, photosLocked, transitioning }: {
+  showCursor?: boolean
+  showLinks?: boolean
+  onLogoTyped?: () => void
+  photosLocked?: boolean
+  transitioning?: boolean
+}) {
   const lang = useLang()
   const nav = t[lang].nav
   const location = useLocation()
   const homeActive = location.pathname === '/'
   const logo = useLogoTypewriter(3, onLogoTyped)
+  const titleOverride = photosLocked ? ['Enter', 'Password.'] : undefined
   const displayLines = titleOverride || LOGO_LINES
+  const [overrideVisible, setOverrideVisible] = useState(false)
+
+  useEffect(() => {
+    if (photosLocked) {
+      const fadeTimer = setTimeout(() => setOverrideVisible(true), 100)
+      return () => clearTimeout(fadeTimer)
+    } else {
+      setOverrideVisible(false)
+    }
+  }, [photosLocked])
+
+  // Disable nav clicks during page transitions or when links aren't shown
+  const linksClickable = showLinks && !transitioning
 
   return (
     <nav className="nav">
@@ -60,7 +80,9 @@ export default function Nav({ showCursor, showLinks, onLogoTyped, titleOverride 
             return (
               <span key={i} className="nav-title-line">
                 <span className="nav-title-placeholder">{text}</span>
-                <span className="nav-title-visible">{text}</span>
+                <span className="nav-title-visible" style={{ opacity: overrideVisible ? 1 : 0, transition: 'opacity 2s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+                  {text}
+                </span>
               </span>
             )
           }
@@ -81,7 +103,11 @@ export default function Nav({ showCursor, showLinks, onLogoTyped, titleOverride 
           )
         })}
       </div>
-      <div className="nav-links" style={{ opacity: showLinks ? 1 : 0, transition: 'opacity 2s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+      <div className="nav-links" style={{
+        opacity: showLinks ? 1 : 0,
+        pointerEvents: linksClickable ? 'auto' : 'none',
+        transition: 'opacity 2s cubic-bezier(0.16, 1, 0.3, 1)',
+      }}>
         <NavLink
           to="/"
           className={`nav-link ${homeActive ? 'active' : ''}`}
