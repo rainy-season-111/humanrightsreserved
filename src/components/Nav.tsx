@@ -4,8 +4,6 @@ import { useLang } from '../LangContext'
 import { t } from '../i18n'
 import './Nav.css'
 
-const ease = [0.16, 1, 0.3, 1] as const
-
 const LOGO_LINES = ['human', 'rights', 'reserved.']
 const LOGO_CHAR_DELAY = 80
 const LOGO_LINE_PAUSE = 1200
