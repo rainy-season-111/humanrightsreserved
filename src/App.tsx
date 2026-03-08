@@ -150,8 +150,8 @@ function App() {
               style={{ height: '100%' }}
             >
               <Routes location={location}>
-                <Route path="/" element={<About logoTyped={logoTyped} revisit={isRevisit} onTypingStart={isRevisit ? undefined : () => setCursorState('body')} onTypingDone={isRevisit ? undefined : () => setCursorState('done')} />} />
-                <Route path="/why" element={<Why logoTyped={logoTyped} revisit={isRevisit} onTypingStart={isRevisit ? undefined : () => setCursorState('body')} onTypingDone={isRevisit ? undefined : () => setCursorState('done')} />} />
+                <Route path="/" element={<About logoTyped={logoTyped} revisit={isRevisit || navRevealed} onTypingStart={isRevisit || navRevealed ? undefined : () => setCursorState('body')} onTypingDone={isRevisit || navRevealed ? undefined : () => setCursorState('done')} />} />
+                <Route path="/why" element={<Why logoTyped={logoTyped} revisit={isRevisit || navRevealed} onTypingStart={isRevisit || navRevealed ? undefined : () => setCursorState('body')} onTypingDone={isRevisit || navRevealed ? undefined : () => setCursorState('done')} />} />
                 <Route path="/photos" element={<Photos onUnlock={() => setPhotosLocked(false)} />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
