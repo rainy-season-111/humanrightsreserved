@@ -36,28 +36,33 @@ function App() {
   useEffect(() => {
     // Lock nav during page transition
     setTransitioning(true)
-    const timer = setTimeout(() => setTransitioning(false), 800)
+    const transTimer = setTimeout(() => setTransitioning(false), 800)
+    let lockTimer: ReturnType<typeof setTimeout> | undefined
 
     if (location.pathname === '/photos') {
-      setPhotosLocked(true)
-    } else if (isRevisit) {
-      // Return visit: skip animations, show everything immediately
-      setCursorState('done')
-      setShowLang(true)
-      setShowBuiltBy(true)
-      setPhotosLocked(false)
+      // Delay title change until exit animation finishes (400ms = 300ms exit + 100ms pause)
+      lockTimer = setTimeout(() => setPhotosLocked(true), 400)
     } else {
-      // First visit: full animation sequence
-      setCursorState('logo')
+      // Clear immediately when leaving photos so title reverts before old page exits
       setPhotosLocked(false)
-      setShowLang(false)
-      setShowBuiltBy(false)
+      if (isRevisit) {
+        // Return visit: skip animations, show everything immediately
+        setCursorState('done')
+        setShowLang(true)
+        setShowBuiltBy(true)
+      } else {
+        // First visit: full animation sequence
+        setCursorState('logo')
+        setShowLang(false)
+        setShowBuiltBy(false)
+      }
     }
 
     // Mark page as visited when leaving
     return () => {
       visitedRef.current.add(location.pathname)
-      clearTimeout(timer)
+      clearTimeout(transTimer)
+      if (lockTimer) clearTimeout(lockTimer)
     }
   }, [location.pathname])
 
