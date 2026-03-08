@@ -12,40 +12,38 @@ const pageTransition = {
   transition: { duration: 2, ease } satisfies Transition,
 }
 
-// Each line waits for nav to finish (photos at ~5.5s + 2s = 7.5s)
-// Then lines come in one by one
-const staggerContainer = {
-  animate: {
-    transition: {
-      staggerChildren: 1.5,
-      delayChildren: 7,
-    },
-  },
+// ~180 wpm = 3 words/sec, + small pause between lines
+function readingTime(text: string) {
+  const words = text.split(/\s+/).length
+  return words / 3 + 0.8
 }
 
-const lineReveal = {
-  initial: { opacity: 0, y: 6 },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 2.5, ease },
-  },
+function getDelays(paragraphs: string[], startAt: number) {
+  const delays: number[] = []
+  let t = startAt
+  for (let i = 0; i < paragraphs.length; i++) {
+    delays.push(t)
+    t += readingTime(paragraphs[i]) + 2 // reading time + fade duration overlap
+  }
+  return delays
 }
 
 export default function About() {
   const lang = useLang()
   const paragraphs = t[lang].about
+  // Video at 7s (after nav), text starts after video has appeared (~10s)
+  const textDelays = getDelays(paragraphs, 10)
 
   return (
     <motion.div className="about" {...pageTransition} key={lang}>
-      <motion.div
-        className="about-text"
-        variants={staggerContainer}
-        initial="initial"
-        animate="animate"
-      >
+      <motion.div className="about-text">
         {paragraphs.map((text, i) => (
-          <motion.p key={`${lang}-${i}`} variants={lineReveal}>
+          <motion.p
+            key={`${lang}-${i}`}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 2.5, delay: textDelays[i], ease }}
+          >
             {text}
           </motion.p>
         ))}
@@ -55,7 +53,7 @@ export default function About() {
         className="about-video"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 3, delay: 17, ease }}
+        transition={{ duration: 3, delay: 7, ease }}
       >
         <video
           autoPlay
