@@ -35,14 +35,14 @@ function App() {
   const isRevisit = visitedRef.current.has(location.pathname)
 
   useEffect(() => {
-    // Lock nav during page transition
+    // Lock nav during page transition (shorter on revisit)
     setTransitioning(true)
-    const transTimer = setTimeout(() => setTransitioning(false), 800)
+    const transTimer = setTimeout(() => setTransitioning(false), isRevisit ? 450 : 800)
     let lockTimer: ReturnType<typeof setTimeout> | undefined
 
     if (location.pathname === '/photos') {
-      // Delay title change until exit animation finishes (400ms = 300ms exit + 100ms pause)
-      lockTimer = setTimeout(() => setPhotosLocked(true), 400)
+      // Delay title change until exit animation finishes
+      lockTimer = setTimeout(() => setPhotosLocked(true), isRevisit ? 250 : 400)
     } else {
       // Clear immediately when leaving photos so title reverts before old page exits
       setPhotosLocked(false)
@@ -134,6 +134,7 @@ function App() {
         <Nav
           showCursor={!photosLocked && cursorState !== 'body'}
           showLinks={navRevealed}
+          skipLogo={navRevealed}
           onLogoTyped={() => setLogoTyped(true)}
           photosLocked={photosLocked}
           transitioning={transitioning}
@@ -143,14 +144,14 @@ function App() {
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: ENTER_EASE, delay: 0.1 } }}
-              exit={{ opacity: 0, y: -12, transition: { duration: 0.3, ease: EXIT_EASE } }}
+              initial={{ opacity: 0, y: isRevisit ? 6 : 12 }}
+              animate={{ opacity: 1, y: 0, transition: { duration: isRevisit ? 0.25 : 0.4, ease: ENTER_EASE, delay: isRevisit ? 0.05 : 0.1 } }}
+              exit={{ opacity: 0, y: -12, transition: { duration: isRevisit ? 0.2 : 0.3, ease: EXIT_EASE } }}
               style={{ height: '100%' }}
             >
               <Routes location={location}>
-                <Route path="/" element={<About logoTyped={logoTyped} revisit={isRevisit} onTypingStart={() => setCursorState('body')} onTypingDone={() => setCursorState('done')} />} />
-                <Route path="/why" element={<Why logoTyped={logoTyped} revisit={isRevisit} onTypingStart={() => setCursorState('body')} onTypingDone={() => setCursorState('done')} />} />
+                <Route path="/" element={<About logoTyped={logoTyped} revisit={isRevisit} onTypingStart={isRevisit ? undefined : () => setCursorState('body')} onTypingDone={isRevisit ? undefined : () => setCursorState('done')} />} />
+                <Route path="/why" element={<Why logoTyped={logoTyped} revisit={isRevisit} onTypingStart={isRevisit ? undefined : () => setCursorState('body')} onTypingDone={isRevisit ? undefined : () => setCursorState('done')} />} />
                 <Route path="/photos" element={<Photos onUnlock={() => setPhotosLocked(false)} />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

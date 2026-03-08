@@ -8,24 +8,37 @@ const LOGO_LINES = ['human', 'rights', 'reserved.']
 const LOGO_CHAR_DELAY = 80
 const LOGO_LINE_PAUSE = 1200
 
-function useLogoTypewriter(startDelay: number, onComplete?: () => void) {
-  const [lineIndex, setLineIndex] = useState(-1)
+function useLogoTypewriter(startDelay: number, skip?: boolean, onComplete?: () => void) {
+  const [lineIndex, setLineIndex] = useState(skip ? LOGO_LINES.length - 1 : -1)
   const [charIndex, setCharIndex] = useState(0)
-  const [started, setStarted] = useState(false)
-  const [done, setDone] = useState(false)
+  const [started, setStarted] = useState(!!skip)
+  const [done, setDone] = useState(!!skip)
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null)
 
+  // Skip can become true mid-animation or on initial mount
   useEffect(() => {
+    if (skip) {
+      if (timerRef.current) clearTimeout(timerRef.current)
+      setStarted(true)
+      setLineIndex(LOGO_LINES.length - 1)
+      setCharIndex(LOGO_LINES[LOGO_LINES.length - 1].length)
+      setDone(true)
+      onComplete?.()
+    }
+  }, [skip])
+
+  useEffect(() => {
+    if (skip) return
     const id = setTimeout(() => {
       setStarted(true)
       setLineIndex(0)
       setCharIndex(0)
     }, startDelay * 1000)
     return () => clearTimeout(id)
-  }, [startDelay])
+  }, [skip, startDelay])
 
   useEffect(() => {
-    if (!started || lineIndex < 0 || lineIndex >= LOGO_LINES.length) return
+    if (skip || !started || lineIndex < 0 || lineIndex >= LOGO_LINES.length) return
     const line = LOGO_LINES[lineIndex]
     if (charIndex < line.length) {
       timerRef.current = setTimeout(() => setCharIndex(prev => prev + 1), LOGO_CHAR_DELAY)
@@ -39,14 +52,15 @@ function useLogoTypewriter(startDelay: number, onComplete?: () => void) {
       onComplete?.()
     }
     return () => { if (timerRef.current) clearTimeout(timerRef.current) }
-  }, [started, lineIndex, charIndex, done, onComplete])
+  }, [skip, started, lineIndex, charIndex, done, onComplete])
 
   return { started, lineIndex, charIndex, done }
 }
 
-export default function Nav({ showCursor, showLinks, onLogoTyped, photosLocked, transitioning, onPhotosClose }: {
+export default function Nav({ showCursor, showLinks, skipLogo, onLogoTyped, photosLocked, transitioning, onPhotosClose }: {
   showCursor?: boolean
   showLinks?: boolean
+  skipLogo?: boolean
   onLogoTyped?: () => void
   photosLocked?: boolean
   transitioning?: boolean
@@ -56,7 +70,7 @@ export default function Nav({ showCursor, showLinks, onLogoTyped, photosLocked, 
   const nav = t[lang].nav
   const location = useLocation()
   const homeActive = location.pathname === '/'
-  const logo = useLogoTypewriter(3, onLogoTyped)
+  const logo = useLogoTypewriter(3, skipLogo, onLogoTyped)
   const titleOverride = photosLocked ? ['Enter', 'Password.'] : undefined
   const displayLines = titleOverride || LOGO_LINES
   const [overrideVisible, setOverrideVisible] = useState(false)

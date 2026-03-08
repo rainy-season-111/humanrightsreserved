@@ -2,7 +2,7 @@
   display: flex;
   align-items: flex-start;
   gap: clamp(3rem, 6vw, 7rem);
-  padding: 0 3.5rem;
+  padding: 2rem 3.5rem 0;
   height: 100%;
 }
 
@@ -40,8 +40,8 @@
 @media (max-width: 960px) {
   .about {
     flex-direction: column;
-    padding: 0 1.5rem;
-    gap: 2.5rem;
+    padding: 1.5rem 1.5rem 0;
+    gap: 2rem;
     overflow-y: auto;
   }
 
@@ -54,17 +54,23 @@
   .about-video {
     width: 100%;
     max-width: none;
+    max-height: 30vh;
+    flex: none;
   }
 }
 
 @media (max-width: 480px) {
   .about {
-    padding: 0 1.25rem;
-    gap: 2rem;
+    padding: 1.25rem 1.25rem 0;
+    gap: 1.5rem;
   }
 
   .about-text {
     font-size: 0.75rem;
     gap: 1em;
+  }
+
+  .about-video {
+    max-height: 25vh;
   }
 }
