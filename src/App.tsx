@@ -82,7 +82,7 @@ function App() {
         </main>
         <footer className="footer">
           <motion.div
-            className="footer-lang shimmer"
+            className="footer-lang"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 2, delay: 18, ease }}
@@ -90,17 +90,16 @@ function App() {
             {languages.map((l, i) => (
               <span key={l}>
                 <button
-                  className={`lang-btn ${lang === l ? 'active' : ''}`}
+                  className={`lang-btn shimmer ${lang === l ? 'active' : ''}`}
                   onClick={() => setLang(l)}
                 >
                   {l === 'GEORDIE' ? 'GEORDIE [7/7]' : l}
                 </button>
-                {i < languages.length - 1 && <span className="lang-sep">|</span>}
+                {i < languages.length - 1 && <span className="lang-sep shimmer">|</span>}
               </span>
             ))}
           </motion.div>
           <motion.div
-            className="shimmer"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 2, delay: 16, ease }}

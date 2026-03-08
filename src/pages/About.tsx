@@ -55,7 +55,7 @@ export default function About() {
         className="about-video"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 3, delay: 10, ease }}
+        transition={{ duration: 3, delay: 17, ease }}
       >
         <video
           autoPlay

@@ -50,14 +50,14 @@ export default function MusicPlayer() {
   return (
     <div className="music">
       <audio ref={audioRef} src="/music.mp3" loop />
-      <button className="music-btn" onClick={toggle} aria-label="Toggle music">
+      <button className="music-btn shimmer" onClick={toggle} aria-label="Toggle music">
         {'\u266A'}
       </button>
-      <span className="music-time">{formatTime(elapsed)}</span>
+      <span className="music-time shimmer">{formatTime(elapsed)}</span>
       <div className="music-progress">
         <div className="music-progress-fill" style={{ width: `${progress}%` }} />
       </div>
-      <span className="music-time">{formatTime(displayDuration)}</span>
+      <span className="music-time shimmer">{formatTime(displayDuration)}</span>
       <div className="music-tip">
         <span className="music-tip-title">When Will We Land?</span>
         <a
