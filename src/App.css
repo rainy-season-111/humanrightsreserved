@@ -96,7 +96,7 @@
   opacity: 0.5;
 }
 
-.built-by {
+.shimmer {
   background: linear-gradient(
     90deg,
     #000 0%,
@@ -109,10 +109,15 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: built-gradient 12s ease infinite;
+  animation: shimmer-gradient 12s ease infinite;
 }
 
-@keyframes built-gradient {
+.built-by {
+  opacity: 0.5;
+  font-size: 0.5625rem;
+}
+
+@keyframes shimmer-gradient {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }

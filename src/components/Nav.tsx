@@ -25,18 +25,15 @@ export default function Nav() {
       <div className="nav-links">
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: aboutActive ? 1 : 1 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 2, delay: 2.5, ease }}
         >
-          <motion.div
-            initial={{ opacity: 0.4 }}
-            animate={{ opacity: aboutActive ? 1 : 0.4 }}
-            transition={{ duration: 2, delay: aboutActive ? 22 : 0, ease }}
+          <NavLink
+            to="/about"
+            className={`nav-link nav-link-about ${aboutActive ? '' : 'inactive'}`}
           >
-            <NavLink to="/about" className="nav-link nav-link-about">
-              {nav.about}
-            </NavLink>
-          </motion.div>
+            {nav.about}
+          </NavLink>
         </motion.div>
         <motion.div
           initial={{ opacity: 0 }}

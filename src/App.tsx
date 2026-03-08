@@ -82,7 +82,7 @@ function App() {
         </main>
         <footer className="footer">
           <motion.div
-            className="footer-lang"
+            className="footer-lang shimmer"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 2, delay: 18, ease }}
@@ -100,6 +100,7 @@ function App() {
             ))}
           </motion.div>
           <motion.div
+            className="shimmer"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 2, delay: 16, ease }}
