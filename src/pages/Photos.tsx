@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Typewriter from '../components/Typewriter'
 import './Photos.css'
 
 const ease = [0.16, 1, 0.3, 1] as const
@@ -8,7 +9,7 @@ const PASSWORD = 'puravida'
 // Add photo filenames here in order, e.g. ['photo-1.jpg', 'photo-2.jpg']
 const photos: string[] = []
 
-export default function Photos({ onUnlock }: { onUnlock?: () => void }) {
+export default function Photos({ onUnlock, onTypingStart, onTypingDone }: { onUnlock?: () => void; onTypingStart?: () => void; onTypingDone?: () => void }) {
   const [input, setInput] = useState('')
   const [unlocked, setUnlocked] = useState(false)
   const [shake, setShake] = useState(false)
@@ -36,22 +37,13 @@ export default function Photos({ onUnlock }: { onUnlock?: () => void }) {
     }
   }, [input])
 
-  // Desktop: global keydown
-  const handleKey = useCallback((e: KeyboardEvent) => {
-    if (unlocked) return
-    if (e.key === 'Enter') {
-      handleSubmit()
-    } else if (e.key === 'Backspace') {
-      setInput(prev => prev.slice(0, -1))
-    } else if (e.key.length === 1 && !e.metaKey && !e.ctrlKey) {
-      setInput(prev => prev + e.key)
-    }
-  }, [input, unlocked, handleSubmit])
-
+  // Keep input focused when user clicks anywhere
   useEffect(() => {
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
-  }, [handleKey])
+    if (unlocked) return
+    const refocus = () => inputRef.current?.focus()
+    window.addEventListener('click', refocus)
+    return () => window.removeEventListener('click', refocus)
+  }, [unlocked])
 
   return (
     <div className={`photos ${unlocked ? 'photos--gallery' : ''}`}>
@@ -93,7 +85,15 @@ export default function Photos({ onUnlock }: { onUnlock?: () => void }) {
             animate={{ opacity: 1 }}
             transition={{ duration: 2, delay: 0.5, ease }}
           >
-            <h1 className="gallery-hero">the story so far...</h1>
+            <div className="gallery-hero">
+              <Typewriter
+                paragraphs={['the story so far...']}
+                startDelay={2.5}
+                lineClassName="gallery-hero-line"
+                onStart={onTypingStart}
+                onComplete={onTypingDone}
+              />
+            </div>
             <div className="gallery-grid">
               {photos.map((src, i) => (
                 <motion.img

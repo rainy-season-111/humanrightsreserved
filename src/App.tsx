@@ -22,7 +22,12 @@ const ENTER_EASE = [0, 0, 0.2, 1] as const
 function App() {
   const location = useLocation()
   const navigate = useNavigate()
-  const [lang, setLang] = useState<Lang | null>(null)
+  const [lang, setLang] = useState<Lang | null>(() => {
+    try {
+      const stored = localStorage.getItem('hrr_lang')
+      return stored && languages.includes(stored as Lang) ? stored as Lang : null
+    } catch { return null }
+  })
   const [cursorState, setCursorState] = useState<'logo' | 'body' | 'done'>('logo')
   const [logoTyped, setLogoTyped] = useState(false)
   const [showLang, setShowLang] = useState(false)
@@ -48,7 +53,7 @@ function App() {
 
     if (location.pathname === '/photos') {
       // Delay title change until exit animation finishes
-      lockTimer = setTimeout(() => setPhotosLocked(true), isRevisit ? 250 : 400)
+      lockTimer = setTimeout(() => setPhotosLocked(true), isRevisit ? 200 : 300)
     } else {
       // Clear immediately when leaving photos so title reverts before old page exits
       setPhotosLocked(false)
@@ -75,14 +80,21 @@ function App() {
   }, [location.pathname])
 
   // Once nav links appear, they stay visible permanently
-  // Also persist visited state when typing completes
   useEffect(() => {
     if (cursorState === 'done') {
       setNavRevealed(true)
       visitedRef.current.add(location.pathname)
-      try { localStorage.setItem('hrr_visited', JSON.stringify([...visitedRef.current])) } catch {}
     }
   }, [cursorState])
+
+  // Persist visited state when tab closes
+  useEffect(() => {
+    const save = () => {
+      try { localStorage.setItem('hrr_visited', JSON.stringify([...visitedRef.current])) } catch {}
+    }
+    window.addEventListener('beforeunload', save)
+    return () => window.removeEventListener('beforeunload', save)
+  }, [])
 
   // First visit: lang fades in 5s after typing done, built-by 8s after
   useEffect(() => {
@@ -94,6 +106,7 @@ function App() {
 
   const selectLang = (l: Lang) => {
     setLang(l)
+    try { localStorage.setItem('hrr_lang', l) } catch {}
     navigate('/')
   }
 
@@ -164,7 +177,7 @@ function App() {
               <Routes location={location}>
                 <Route path="/" element={<About logoTyped={logoTyped} revisit={isRevisit || navRevealed} onTypingStart={isRevisit || navRevealed ? undefined : () => setCursorState('body')} onTypingDone={isRevisit || navRevealed ? undefined : () => setCursorState('done')} />} />
                 <Route path="/why" element={<Why logoTyped={logoTyped} revisit={isRevisit || navRevealed} onTypingStart={isRevisit || navRevealed ? undefined : () => setCursorState('body')} onTypingDone={isRevisit || navRevealed ? undefined : () => setCursorState('done')} />} />
-                <Route path="/photos" element={<Photos onUnlock={() => setPhotosLocked(false)} />} />
+                <Route path="/photos" element={<Photos onUnlock={() => setPhotosLocked(false)} onTypingStart={() => setCursorState('body')} onTypingDone={() => setCursorState('done')} />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </motion.div>
@@ -176,7 +189,7 @@ function App() {
               <span key={l}>
                 <button
                   className={`lang-btn shimmer ${lang === l ? 'active' : ''}`}
-                  onClick={() => setLang(l)}
+                  onClick={() => { setLang(l); try { localStorage.setItem('hrr_lang', l) } catch {} }}
                 >
                   {l === 'GEORDIE' ? 'GEORDIE [7/7]' : l}
                 </button>

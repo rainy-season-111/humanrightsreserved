@@ -17,7 +17,7 @@ export default function MusicPlayer() {
     const audio = audioRef.current
     if (!audio) return
     audio.volume = 0.3
-    audio.play().then(() => setPlaying(true)).catch(() => {})
+    audio.play().then(() => setPlaying(true)).catch(() => setPlaying(false))
   }, [])
 
   useEffect(() => {
@@ -38,10 +38,10 @@ export default function MusicPlayer() {
     if (!audio) return
     if (playing) {
       audio.pause()
+      setPlaying(false)
     } else {
-      audio.play()
+      audio.play().then(() => setPlaying(true)).catch(() => setPlaying(false))
     }
-    setPlaying(!playing)
   }
 
   const displayDuration = 3 * 60 + 33
