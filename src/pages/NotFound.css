@@ -34,7 +34,7 @@
 .nf-cursor {
   display: inline-block;
   width: 2px;
-  height: 1.2em;
+  height: 12px;
   background: #000;
   animation: nf-blink 1s step-end infinite;
 }
@@ -49,7 +49,7 @@
   bottom: 2.5rem;
   left: 3.5rem;
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .nf-bottom-right {
@@ -57,7 +57,7 @@
   bottom: 2.5rem;
   right: 3.5rem;
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 @media (max-width: 768px) {

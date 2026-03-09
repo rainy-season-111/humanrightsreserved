@@ -1,7 +1,7 @@
 .nav {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: flex-end;
   padding: 2.5rem 3.5rem 1rem;
   font-size: 0.8125rem;
   line-height: 1.5;

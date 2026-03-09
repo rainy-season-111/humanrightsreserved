@@ -35,7 +35,27 @@
   caret-color: transparent;
 }
 
+.lock-prompt-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+}
+
+.lock-prompt {
+  font-size: 0.8125rem;
+  letter-spacing: 0.1em;
+  color: #000;
+  opacity: 0;
+  transition: opacity 2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lock-prompt--visible {
+  opacity: 1;
+}
+
 .lock-input {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.6em;
@@ -63,7 +83,7 @@
 .lock-cursor {
   display: inline-block;
   width: 2px;
-  height: 1.2em;
+  height: 12px;
   background: #000;
   animation: blink 1s step-end infinite;
 }

@@ -4,38 +4,59 @@ import Typewriter from '../components/Typewriter'
 import './Photos.css'
 
 const ease = [0.16, 1, 0.3, 1] as const
-const PASSWORD = 'puravida'
 
 // Add photo filenames here in order, e.g. ['photo-1.jpg', 'photo-2.jpg']
 const photos: string[] = []
 
-export default function Photos({ onUnlock, onTypingStart, onTypingDone }: { onUnlock?: () => void; onTypingStart?: () => void; onTypingDone?: () => void }) {
+export default function Photos({ logoTyped, onTypingStart, onTypingDone, onLockCursor }: { logoTyped?: boolean; onTypingStart?: () => void; onTypingDone?: () => void; onLockCursor?: (visible: boolean) => void }) {
   const [input, setInput] = useState('')
-  const [unlocked, setUnlocked] = useState(false)
+  const [unlocked, setUnlocked] = useState(() => !!sessionStorage.getItem('hrr_photos_token'))
   const [shake, setShake] = useState(false)
   const [showCursor, setShowCursor] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    if (!logoTyped) return
     const timer = setTimeout(() => {
       setShowCursor(true)
+      onLockCursor?.(true)
       inputRef.current?.focus()
     }, 2500)
     return () => clearTimeout(timer)
-  }, [])
+  }, [logoTyped])
 
-  const handleSubmit = useCallback(() => {
-    if (input === PASSWORD) {
-      setUnlocked(true)
-      onUnlock?.()
-    } else {
+  const handleSubmit = useCallback(async () => {
+    if (submitting || !input) return
+    setSubmitting(true)
+    try {
+      const res = await fetch('/api/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: input }),
+      })
+      if (res.ok) {
+        const { token } = await res.json()
+        sessionStorage.setItem('hrr_photos_token', token)
+        setUnlocked(true)
+        onLockCursor?.(false)
+      } else {
+        setShake(true)
+        setTimeout(() => {
+          setShake(false)
+          setInput('')
+        }, 500)
+      }
+    } catch {
       setShake(true)
       setTimeout(() => {
         setShake(false)
         setInput('')
       }, 500)
+    } finally {
+      setSubmitting(false)
     }
-  }, [input])
+  }, [input, submitting])
 
   // Keep input focused when user clicks anywhere
   useEffect(() => {
@@ -70,11 +91,14 @@ export default function Photos({ onUnlock, onTypingStart, onTypingDone }: { onUn
               onChange={e => { if (!unlocked) setInput(e.target.value) }}
               onKeyDown={e => { if (e.key === 'Enter') handleSubmit() }}
             />
-            <div className={`lock-input ${shake ? 'shake' : ''}`}>
-              {input.split('').map((_, i) => (
-                <span key={i} className="lock-star">&#10038;</span>
-              ))}
-              {showCursor && <span className="lock-cursor" />}
+            <div className="lock-prompt-wrap">
+              <span className={`lock-prompt ${showCursor ? 'lock-prompt--visible' : ''}`}>ENTER PASSWORD</span>
+              <div className={`lock-input ${shake ? 'shake' : ''}`}>
+                {input.split('').map((_, i) => (
+                  <span key={i} className="lock-star">&#10038;</span>
+                ))}
+                {showCursor && <span className="lock-cursor" />}
+              </div>
             </div>
           </motion.div>
         ) : (

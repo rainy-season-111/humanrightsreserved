@@ -29,10 +29,10 @@ function App() {
     } catch { return null }
   })
   const [cursorState, setCursorState] = useState<'logo' | 'body' | 'done'>('logo')
+  const [lockCursorVisible, setLockCursorVisible] = useState(false)
   const [logoTyped, setLogoTyped] = useState(false)
   const [showLang, setShowLang] = useState(false)
   const [showBuiltBy, setShowBuiltBy] = useState(false)
-  const [photosLocked, setPhotosLocked] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
   const [navRevealed, setNavRevealed] = useState(false)
   const visitedRef = useRef<Set<string>>(null!)
@@ -49,14 +49,9 @@ function App() {
     // Lock nav during page transition (shorter on revisit)
     setTransitioning(true)
     const transTimer = setTimeout(() => setTransitioning(false), isRevisit ? 450 : 800)
-    let lockTimer: ReturnType<typeof setTimeout> | undefined
 
-    if (location.pathname === '/photos') {
-      // Delay title change until exit animation finishes
-      lockTimer = setTimeout(() => setPhotosLocked(true), isRevisit ? 200 : 300)
-    } else {
-      // Clear immediately when leaving photos so title reverts before old page exits
-      setPhotosLocked(false)
+    if (location.pathname !== '/photos') {
+      setLockCursorVisible(false)
       if (isRevisit) {
         // Return visit: skip animations, show everything immediately
         setCursorState('done')
@@ -75,7 +70,6 @@ function App() {
       visitedRef.current.add(location.pathname)
       try { localStorage.setItem('hrr_visited', JSON.stringify([...visitedRef.current])) } catch {}
       clearTimeout(transTimer)
-      if (lockTimer) clearTimeout(lockTimer)
     }
   }, [location.pathname])
 
@@ -156,14 +150,13 @@ function App() {
   return (
     <LangContext.Provider value={lang}>
       <div className="app">
+        <MusicPlayer />
         <Nav
-          showCursor={!photosLocked && cursorState !== 'body'}
-          showLinks={navRevealed}
+          showCursor={cursorState !== 'body' && !lockCursorVisible}
+          showLinks={navRevealed || location.pathname === '/photos'}
           skipLogo={navRevealed}
           onLogoTyped={() => setLogoTyped(true)}
-          photosLocked={photosLocked}
           transitioning={transitioning}
-          onPhotosClose={() => navigate('/')}
         />
         <main className="main">
           <AnimatePresence mode="wait">
@@ -175,9 +168,9 @@ function App() {
               style={{ height: '100%' }}
             >
               <Routes location={location}>
-                <Route path="/" element={<About logoTyped={logoTyped} revisit={isRevisit || navRevealed} onTypingStart={isRevisit || navRevealed ? undefined : () => setCursorState('body')} onTypingDone={isRevisit || navRevealed ? undefined : () => setCursorState('done')} />} />
-                <Route path="/why" element={<Why logoTyped={logoTyped} revisit={isRevisit || navRevealed} onTypingStart={isRevisit || navRevealed ? undefined : () => setCursorState('body')} onTypingDone={isRevisit || navRevealed ? undefined : () => setCursorState('done')} />} />
-                <Route path="/photos" element={<Photos onUnlock={() => setPhotosLocked(false)} onTypingStart={() => setCursorState('body')} onTypingDone={() => setCursorState('done')} />} />
+                <Route path="/" element={<About logoTyped={logoTyped} revisit={isRevisit} onTypingStart={isRevisit ? undefined : () => setCursorState('body')} onTypingDone={isRevisit ? undefined : () => setCursorState('done')} />} />
+                <Route path="/why" element={<Why logoTyped={logoTyped} revisit={isRevisit} onTypingStart={isRevisit ? undefined : () => setCursorState('body')} onTypingDone={isRevisit ? undefined : () => setCursorState('done')} />} />
+                <Route path="/photos" element={<Photos logoTyped={logoTyped} onTypingStart={() => setCursorState('body')} onTypingDone={() => setCursorState('done')} onLockCursor={setLockCursorVisible} />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </motion.div>
@@ -197,7 +190,6 @@ function App() {
               </span>
             ))}
           </div>
-          <MusicPlayer />
         </footer>
         <div className="built-by-row" style={{ opacity: showBuiltBy ? 1 : 0, transition: FADE }}>
           <span className="built-by">{t[lang].builtBy}</span>

@@ -48,16 +48,13 @@ export default function MusicPlayer() {
   const progress = duration ? (elapsed / duration) * 100 : 0
 
   return (
-    <div className="music">
+    <div className="music" onClick={toggle} role="button" aria-label="Toggle music">
       <audio ref={audioRef} src="/music.mp3" loop />
-      <button className="music-btn shimmer" onClick={toggle} aria-label="Toggle music">
-        {'\u266A'}
-      </button>
-      <span className="music-time shimmer">{formatTime(elapsed)}</span>
+      <span className="music-time">{formatTime(elapsed)}</span>
       <div className="music-progress">
         <div className="music-progress-fill" style={{ width: `${progress}%` }} />
       </div>
-      <span className="music-time shimmer">{formatTime(displayDuration)}</span>
+      <span className="music-time">{formatTime(displayDuration)}</span>
       <div className="music-tip">
         <span className="music-tip-title">When Will We Land?</span>
         <a
@@ -65,6 +62,7 @@ export default function MusicPlayer() {
           target="_blank"
           rel="noopener noreferrer"
           className="music-tip-artist"
+          onClick={e => e.stopPropagation()}
         >
           Barry Can't Swim
         </a>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation, NavLink } from 'react-router-dom'
 import { useLang } from '../LangContext'
 import { t } from '../i18n'
@@ -57,32 +57,18 @@ function useLogoTypewriter(startDelay: number, skip?: boolean, onComplete?: () =
   return { started, lineIndex, charIndex, done }
 }
 
-export default function Nav({ showCursor, showLinks, skipLogo, onLogoTyped, photosLocked, transitioning, onPhotosClose }: {
+export default function Nav({ showCursor, showLinks, skipLogo, onLogoTyped, transitioning }: {
   showCursor?: boolean
   showLinks?: boolean
   skipLogo?: boolean
   onLogoTyped?: () => void
-  photosLocked?: boolean
   transitioning?: boolean
-  onPhotosClose?: () => void
 }) {
   const lang = useLang()
   const nav = t[lang].nav
   const location = useLocation()
   const homeActive = location.pathname === '/'
   const logo = useLogoTypewriter(3, skipLogo, onLogoTyped)
-  const titleOverride = photosLocked ? ['Enter', 'Password.'] : undefined
-  const displayLines = titleOverride || LOGO_LINES
-  const [overrideVisible, setOverrideVisible] = useState(false)
-
-  useEffect(() => {
-    if (photosLocked) {
-      const fadeTimer = setTimeout(() => setOverrideVisible(true), 100)
-      return () => clearTimeout(fadeTimer)
-    } else {
-      setOverrideVisible(false)
-    }
-  }, [photosLocked])
 
   // Disable nav clicks during page transitions or when links aren't shown
   const linksClickable = showLinks && !transitioning
@@ -90,17 +76,7 @@ export default function Nav({ showCursor, showLinks, skipLogo, onLogoTyped, phot
   return (
     <nav className="nav">
       <div className="nav-title">
-        {displayLines.map((text, i) => {
-          if (titleOverride) {
-            return (
-              <span key={i} className="nav-title-line">
-                <span className="nav-title-placeholder">{text}</span>
-                <span className="nav-title-visible" style={{ opacity: overrideVisible ? 1 : 0, transition: 'opacity 2s cubic-bezier(0.16, 1, 0.3, 1)' }}>
-                  {text}
-                </span>
-              </span>
-            )
-          }
+        {LOGO_LINES.map((text, i) => {
           const isTyping = logo.started && i === logo.lineIndex
           const isDone = logo.started && i < logo.lineIndex
           const visible = logo.done || isDone ? text : isTyping ? text.slice(0, logo.charIndex) : ''
@@ -119,40 +95,34 @@ export default function Nav({ showCursor, showLinks, skipLogo, onLogoTyped, phot
         })}
       </div>
       <div className="nav-links" style={{
-        opacity: (showLinks || photosLocked) ? 1 : 0,
-        pointerEvents: (linksClickable || photosLocked) ? 'auto' : 'none',
+        opacity: showLinks ? 1 : 0,
+        pointerEvents: linksClickable ? 'auto' : 'none',
         transition: 'opacity 2s cubic-bezier(0.16, 1, 0.3, 1)',
       }}>
-        {photosLocked ? (
-          <button className="nav-close" onClick={onPhotosClose} aria-label="Close">&#x2715;</button>
-        ) : (
-          <>
-            <NavLink
-              to="/"
-              className={`nav-link ${homeActive ? 'active' : ''}`}
-            >
-              {nav.home}
-            </NavLink>
-            <NavLink
-              to="/why"
-              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-            >
-              {nav.why}
-            </NavLink>
-            <NavLink
-              to="/photos"
-              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-            >
-              {nav.photos}
-            </NavLink>
-            <a
-              href="https://humanrightsreserved.com"
-              className="nav-link"
-            >
-              .com
-            </a>
-          </>
-        )}
+        <NavLink
+          to="/"
+          className={`nav-link ${homeActive ? 'active' : ''}`}
+        >
+          {nav.home}
+        </NavLink>
+        <NavLink
+          to="/why"
+          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+        >
+          {nav.why}
+        </NavLink>
+        <NavLink
+          to="/photos"
+          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+        >
+          {nav.photos}
+        </NavLink>
+        <a
+          href="https://humanrightsreserved.com"
+          className="nav-link"
+        >
+          .com
+        </a>
       </div>
     </nav>
   )
