@@ -95,7 +95,7 @@ export const t: Record<Lang, Translations> = {
       'to inspire others te dee the same.',
       'to enjoy the life, man :)',
     ],
-    enterPassword: 'ENTER PASSWORD, LIKE',
+    enterPassword: 'ENTER WOR PASSWORD',
     builtBy: 'built by tamara an\u2019 william.',
     nav: { home: 'hyem.', why: 'why, like?', photos: 'photos.' },
   },
