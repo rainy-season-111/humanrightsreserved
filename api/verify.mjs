@@ -12,9 +12,9 @@ export default function handler(req, res) {
     }
 
     const hash = createHash('sha256').update(password).digest('hex')
-    const expected = process.env.PHOTOS_PASSWORD_HASH
+    const expected = (process.env.PHOTOS_PASSWORD_HASH || '').trim()
 
-    if (!expected || !timingSafeEqual(Buffer.from(hash), Buffer.from(expected))) {
+    if (!expected || hash.length !== expected.length || !timingSafeEqual(Buffer.from(hash, 'hex'), Buffer.from(expected, 'hex'))) {
       return res.status(401).json({ error: 'Incorrect password' })
     }
 
@@ -34,6 +34,6 @@ export default function handler(req, res) {
 
     return res.status(200).json({ token })
   } catch (err) {
-    return res.status(500).json({ error: String(err), stack: String(err.stack) })
+    return res.status(500).json({ error: 'Internal error' })
   }
 }
