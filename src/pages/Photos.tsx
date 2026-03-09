@@ -16,17 +16,21 @@ export default function Photos({ logoTyped, onTypingStart, onTypingDone, onLockC
   const [unlocked, setUnlocked] = useState(() => !!sessionStorage.getItem('hrr_photos_token'))
   const [shake, setShake] = useState(false)
   const [showCursor, setShowCursor] = useState(false)
+  const [showLabel, setShowLabel] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (!logoTyped) return
-    const timer = setTimeout(() => {
+    const cursorTimer = setTimeout(() => {
       setShowCursor(true)
       onLockCursor?.(true)
       inputRef.current?.focus()
     }, 2500)
-    return () => clearTimeout(timer)
+    const labelTimer = setTimeout(() => {
+      setShowLabel(true)
+    }, 4000)
+    return () => { clearTimeout(cursorTimer); clearTimeout(labelTimer) }
   }, [logoTyped])
 
   const handleSubmit = useCallback(async () => {
@@ -95,7 +99,7 @@ export default function Photos({ logoTyped, onTypingStart, onTypingDone, onLockC
               onKeyDown={e => { if (e.key === 'Enter') handleSubmit() }}
             />
             <div className="lock-prompt-wrap">
-              <span className={`lock-prompt ${showCursor ? 'lock-prompt--visible' : ''}`}>{t[lang].enterPassword}</span>
+              <span className={`lock-prompt ${showLabel ? 'lock-prompt--visible' : ''}`}>{t[lang].enterPassword}</span>
               <div className={`lock-input ${shake ? 'shake' : ''}`}>
                 {input.split('').map((_, i) => (
                   <span key={i} className="lock-star">&#10038;</span>
