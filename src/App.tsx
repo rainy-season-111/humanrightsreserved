@@ -30,7 +30,13 @@ function App() {
   const [photosLocked, setPhotosLocked] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
   const [navRevealed, setNavRevealed] = useState(false)
-  const visitedRef = useRef<Set<string>>(new Set())
+  const visitedRef = useRef<Set<string>>(null!)
+  if (visitedRef.current === null) {
+    try {
+      const stored = localStorage.getItem('hrr_visited')
+      visitedRef.current = stored ? new Set(JSON.parse(stored)) : new Set()
+    } catch { visitedRef.current = new Set() }
+  }
 
   const isRevisit = visitedRef.current.has(location.pathname)
 
@@ -62,14 +68,20 @@ function App() {
     // Mark page as visited when leaving
     return () => {
       visitedRef.current.add(location.pathname)
+      try { localStorage.setItem('hrr_visited', JSON.stringify([...visitedRef.current])) } catch {}
       clearTimeout(transTimer)
       if (lockTimer) clearTimeout(lockTimer)
     }
   }, [location.pathname])
 
   // Once nav links appear, they stay visible permanently
+  // Also persist visited state when typing completes
   useEffect(() => {
-    if (cursorState === 'done') setNavRevealed(true)
+    if (cursorState === 'done') {
+      setNavRevealed(true)
+      visitedRef.current.add(location.pathname)
+      try { localStorage.setItem('hrr_visited', JSON.stringify([...visitedRef.current])) } catch {}
+    }
   }, [cursorState])
 
   // First visit: lang fades in 5s after typing done, built-by 8s after
