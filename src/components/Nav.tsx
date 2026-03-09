@@ -4,12 +4,11 @@ import { useLang } from '../LangContext'
 import { t } from '../i18n'
 import './Nav.css'
 
-const LOGO_LINES = ['human', 'rights', 'reserved.']
 const LOGO_CHAR_DELAY = 80
 const LOGO_LINE_PAUSE = 1200
 
-function useLogoTypewriter(startDelay: number, skip?: boolean, onComplete?: () => void) {
-  const [lineIndex, setLineIndex] = useState(skip ? LOGO_LINES.length - 1 : -1)
+function useLogoTypewriter(lines: string[], startDelay: number, skip?: boolean, onComplete?: () => void) {
+  const [lineIndex, setLineIndex] = useState(skip ? lines.length - 1 : -1)
   const [charIndex, setCharIndex] = useState(0)
   const [started, setStarted] = useState(!!skip)
   const [done, setDone] = useState(!!skip)
@@ -20,8 +19,8 @@ function useLogoTypewriter(startDelay: number, skip?: boolean, onComplete?: () =
     if (skip) {
       if (timerRef.current) clearTimeout(timerRef.current)
       setStarted(true)
-      setLineIndex(LOGO_LINES.length - 1)
-      setCharIndex(LOGO_LINES[LOGO_LINES.length - 1].length)
+      setLineIndex(lines.length - 1)
+      setCharIndex(lines[lines.length - 1].length)
       setDone(true)
       onComplete?.()
     }
@@ -38,11 +37,11 @@ function useLogoTypewriter(startDelay: number, skip?: boolean, onComplete?: () =
   }, [skip, startDelay])
 
   useEffect(() => {
-    if (skip || !started || lineIndex < 0 || lineIndex >= LOGO_LINES.length) return
-    const line = LOGO_LINES[lineIndex]
+    if (skip || !started || lineIndex < 0 || lineIndex >= lines.length) return
+    const line = lines[lineIndex]
     if (charIndex < line.length) {
       timerRef.current = setTimeout(() => setCharIndex(prev => prev + 1), LOGO_CHAR_DELAY)
-    } else if (lineIndex < LOGO_LINES.length - 1) {
+    } else if (lineIndex < lines.length - 1) {
       timerRef.current = setTimeout(() => {
         setLineIndex(prev => prev + 1)
         setCharIndex(0)
@@ -52,7 +51,7 @@ function useLogoTypewriter(startDelay: number, skip?: boolean, onComplete?: () =
       onComplete?.()
     }
     return () => { if (timerRef.current) clearTimeout(timerRef.current) }
-  }, [skip, started, lineIndex, charIndex, done, onComplete])
+  }, [skip, started, lineIndex, charIndex, done, onComplete, lines])
 
   return { started, lineIndex, charIndex, done }
 }
@@ -66,9 +65,10 @@ export default function Nav({ showCursor, showLinks, skipLogo, onLogoTyped, tran
 }) {
   const lang = useLang()
   const nav = t[lang].nav
+  const logoLines = t[lang].logo
   const location = useLocation()
   const homeActive = location.pathname === '/'
-  const logo = useLogoTypewriter(3, skipLogo, onLogoTyped)
+  const logo = useLogoTypewriter(logoLines, 3, skipLogo, onLogoTyped)
 
   // Disable nav clicks during page transitions or when links aren't shown
   const linksClickable = showLinks && !transitioning
@@ -76,12 +76,12 @@ export default function Nav({ showCursor, showLinks, skipLogo, onLogoTyped, tran
   return (
     <nav className="nav">
       <div className="nav-title">
-        {LOGO_LINES.map((text, i) => {
+        {logoLines.map((text, i) => {
           const isTyping = logo.started && i === logo.lineIndex
           const isDone = logo.started && i < logo.lineIndex
           const visible = logo.done || isDone ? text : isTyping ? text.slice(0, logo.charIndex) : ''
           const cursorHere = isTyping && !logo.done
-          const returnCursor = logo.done && i === LOGO_LINES.length - 1 && showCursor
+          const returnCursor = logo.done && i === logoLines.length - 1 && showCursor
 
           return (
             <span key={i} className="nav-title-line">

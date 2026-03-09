@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useLang } from '../LangContext'
+import { t } from '../i18n'
 import Typewriter from '../components/Typewriter'
 import './Photos.css'
 
@@ -9,6 +11,7 @@ const ease = [0.16, 1, 0.3, 1] as const
 const photos: string[] = []
 
 export default function Photos({ logoTyped, onTypingStart, onTypingDone, onLockCursor }: { logoTyped?: boolean; onTypingStart?: () => void; onTypingDone?: () => void; onLockCursor?: (visible: boolean) => void }) {
+  const lang = useLang()
   const [input, setInput] = useState('')
   const [unlocked, setUnlocked] = useState(() => !!sessionStorage.getItem('hrr_photos_token'))
   const [shake, setShake] = useState(false)
@@ -92,7 +95,7 @@ export default function Photos({ logoTyped, onTypingStart, onTypingDone, onLockC
               onKeyDown={e => { if (e.key === 'Enter') handleSubmit() }}
             />
             <div className="lock-prompt-wrap">
-              <span className={`lock-prompt ${showCursor ? 'lock-prompt--visible' : ''}`}>ENTER PASSWORD</span>
+              <span className={`lock-prompt ${showCursor ? 'lock-prompt--visible' : ''}`}>{t[lang].enterPassword}</span>
               <div className={`lock-input ${shake ? 'shake' : ''}`}>
                 {input.split('').map((_, i) => (
                   <span key={i} className="lock-star">&#10038;</span>
